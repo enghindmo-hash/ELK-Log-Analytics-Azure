@@ -84,7 +84,7 @@ resource "azurerm_linux_virtual_machine" "elk_vm" {
   name                = var.vm_name
   resource_group_name = azurerm_resource_group.elk_rg.name
   location            = azurerm_resource_group.elk_rg.location
-  size                = "Standard_B2ms"
+  size                = "Standard_DC2ds_v3"
   admin_username      = var.admin_username
 
   network_interface_ids = [
