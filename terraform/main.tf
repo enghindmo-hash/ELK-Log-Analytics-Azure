@@ -87,6 +87,7 @@ resource "azurerm_linux_virtual_machine" "elk_vm" {
   size                = "Standard_DC2ds_v3"
   admin_username      = var.admin_username
 
+
   network_interface_ids = [
     azurerm_network_interface.elk_nic.id
   ]
