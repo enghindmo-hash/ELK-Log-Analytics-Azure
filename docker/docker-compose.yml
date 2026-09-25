@@ -3,47 +3,76 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.5.4
     container_name: elasticsearch
+
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.certificate=/usr/share/elasticsearch/config/certs/elasticsearch.crt
+      - xpack.security.http.ssl.key=/usr/share/elasticsearch/config/certs/elasticsearch.key
+      - xpack.security.http.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca.crt
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+
     ports:
       - "127.0.0.1:9200:9200"
+
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
+      - ../docker/certs/ca/ca.crt:/usr/share/elasticsearch/config/certs/ca.crt:ro
+      - ../docker/certs/elasticsearch/elasticsearch/elasticsearch.crt:/usr/share/elasticsearch/config/certs/elasticsearch.crt:ro
+      - ../docker/certs/elasticsearch/elasticsearch/elasticsearch.key:/usr/share/elasticsearch/config/certs/elasticsearch.key:ro
+
     networks:
       - elk
+
 
   kibana:
     image: docker.elastic.co/kibana/kibana:9.5.4
     container_name: kibana
+
     depends_on:
       - elasticsearch
+
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+      - ELASTICSEARCH_SERVICEACCOUNTTOKEN=${KIBANA_SERVICE_ACCOUNT_TOKEN}
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/kibana/config/certs/ca.crt
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${KIBANA_ENCRYPTION_KEY}
+
     ports:
-      - "5601:5601"
+      - "127.0.0.1:5601:5601"
+
+    volumes:
+      - ../docker/certs/ca/ca.crt:/usr/share/kibana/config/certs/ca.crt:ro
+
     networks:
       - elk
+
 
   logstash:
     image: docker.elastic.co/logstash/logstash:9.5.4
     container_name: logstash
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     depends_on:
       - elasticsearch
+
     ports:
-      - "5044:5044"
-      - "5000:5000"
+      - "127.0.0.1:5044:5044"
+      - "127.0.0.1:5000:5000"
+
     volumes:
       - ../logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ../docker/certs/ca/ca.crt:/usr/share/logstash/config/certs/ca.crt:ro
+
     networks:
       - elk
 
+
 volumes:
   elasticsearch-data:
+
 
 networks:
   elk:
