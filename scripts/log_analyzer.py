@@ -1,4 +1,5 @@
 import json
+import os
 import urllib3
 from elasticsearch import Elasticsearch
 
@@ -8,8 +9,9 @@ def connect_elk():
     try:
         es = Elasticsearch(
             "https://localhost:9200",
-            basic_auth=("elastic", "SFELK@26Secure"),
-            verify_certs=False
+            basic_auth=("elastic", os.environ["ELASTIC_PASSWORD"]),
+            verify_certs=True,
+            ca_certs="docker/certs/ca/ca.crt"
         )
         if es.ping():
             print("✅ Connected to Elasticsearch via HTTPS Successfully!")
