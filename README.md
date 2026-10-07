@@ -1,43 +1,106 @@
 # Internal Log Analytics and Search Platform Based on ELK Stack
 
-A secure, centralized log management and analytics platform deployed on an **Azure VM** using **Docker Compose**. This platform is designed to securely aggregate, parse, and visualize infrastructure and application logs.
+A centralized log management and analytics platform deployed on an **Azure Virtual Machine** using **Docker Compose**. The platform is designed to collect, process, store, search, and visualize infrastructure and application logs through the **ELK Stack**.
 
 ## 🚀 Features & Architecture Implemented
+
 - **Centralized Logging:** Powered by Elasticsearch, Logstash, and Kibana (ELK Stack).
-- **End-to-End Security:** Strict HTTPS/TLS encryption configured across Elasticsearch nodes.
-- **Certificate Management:** Configured built-in Certificate Authority (CA) and SSL certificates for secure component bindings.
-- **Secure Authentication:** Kibana is integrated using a secure Service Account Token with encryption keys preserved in environments.
-- **Optimized Pipeline:** Single pipeline execution in Logstash listening on Port 5000 with strict deduplication rules.
+- **Cloud Deployment:** The ELK Stack is deployed on an **Azure Virtual Machine** using Docker Compose.
+- **Log Processing Pipeline:** Logstash receives and processes incoming log events through a dedicated pipeline on **Port 5000**.
+- **Structured Log Analysis:** Logs are processed into structured fields such as `status`, `user`, `service`, and `code` for analysis and filtering.
+- **Secure Authentication:** Kibana is integrated with Elasticsearch using a **Service Account Token**.
+- **Configuration Protection:** Sensitive credentials and environment-specific configuration are excluded from version control using `.gitignore`.
 
 ---
 
 ## 🔍 Validation & Troubleshooting Use Cases
-The platform's capability to process, filter, and alert against infrastructure events was verified by executing real-time log simulation attacks via Logstash (`Port 5000`):
+
+The platform was validated using real-time **simulated log events** sent through the Logstash ingestion pipeline on `Port 5000`.
 
 ### 1. Verification of Log Flow
-Successfully validated end-to-end data ingestion by sending structural tests into the ingestion pipeline, verifying successful storage within automated dynamic daily indices (`elk-logs-*`).
+
+Successfully validated end-to-end log ingestion by sending test events through the Logstash pipeline and verifying their availability in Kibana and Elasticsearch.
+
+The processed logs were stored using dynamic daily indices following the:
+
+`elk-logs-*`
+
+pattern.
 
 ### 2. Unauthorized Access Detection (Use Case 1)
-Simulated security threats involving access violations:
-- **Payload:** `{"message": "Unauthorized access attempt detected", "status": "error", "user": "attacker", "code": 403}`
-- **Behavior:** Successfully identified in Kibana and flagged as an `error` state under code `403`.
+
+A simulated unauthorized access event was used to validate the processing of security-related logs.
+
+- **Payload:**
+```json
+{
+  "message": "Unauthorized access attempt detected",
+  "status": "error",
+  "user": "attacker",
+  "code": 403
+}
+```
+
+- **Result:** Successfully processed and visualized in Kibana with an `error` status and HTTP code `403`.
 
 ### 3. Critical Infrastructure Failure (Use Case 2)
-Simulated service outages across application dependencies:
-- **Payload:** `{"message": "Database connection failed", "status": "critical", "service": "mysql", "code": 500}`
-- **Behavior:** Logstash processed and routed the alarm instantly to Kibana, marking it with a `critical` status severity.
+
+A simulated database failure event was used to validate the processing of critical infrastructure events.
+
+- **Payload:**
+```json
+{
+  "message": "Database connection failed",
+  "status": "critical",
+  "service": "mysql",
+  "code": 500
+}
+```
+
+- **Result:** Successfully processed through the Logstash pipeline and displayed in Kibana with a `critical` status and HTTP code `500`.
 
 ---
 
-## 📊 Interactive Dashboards
-An interactive monitoring dashboard (**Project Logs Dashboard**) was created inside Kibana containing structured visualizations:
-- **Status Distribution Chart:** A precise Pie Chart dynamically breaking down total log flows into calculated metrics (`testing` vs `error` vs `critical`).
-- **Real-time Ingestion Metrics:** Live tracking filters powered by Kibana Query Language (KQL) allowing administrators to filter active production threats instantly via:
-  ```kql
-  status : "error" or status : "critical"
-  ```
+## 📊 Interactive Dashboard
+
+An interactive monitoring dashboard (**Project Logs Dashboard**) was created in Kibana containing structured visualizations.
+
+- **Status Distribution:** A pie chart showing the distribution of log events by status, including `testing`, `error`, and `critical`.
+- **Log Monitoring:** Visual monitoring of processed events and their structured fields.
+- **KQL Filtering:** Kibana Query Language (KQL) filters allow users to quickly isolate events based on their status.
+
+**Example:**
+
+```kql
+status : "error" or status : "critical"
+```
 
 ---
 
-## 🔒 Security Compliance
-- All sensitive credentials, tokens, deployment `.env` configurations, and SSH private keys are explicitly stripped and protected via `.gitignore` to ensure **Zero Leakage** to public or private version control systems.
+## 🔒 Security & Configuration
+
+- Sensitive credentials, service tokens, `.env` configuration files, and SSH private keys are excluded from the repository using `.gitignore`.
+- Secrets are not committed to version control.
+- Kibana–Elasticsearch authentication is configured using a **Service Account Token**.
+- Environment-specific configuration is separated from the tracked project files.
+
+---
+
+## 🛠️ Technologies Used
+
+- **Microsoft Azure**
+- **Elasticsearch 9.5.4**
+- **Logstash 9.5.4**
+- **Kibana 9.5.4**
+- **Docker**
+- **Docker Compose**
+- **Kibana Query Language (KQL)**
+- **Git / GitHub**
+
+---
+
+## 🎯 Project Objective
+
+The objective of this project is to build a centralized log analytics platform that enables organizations to collect, process, search, and visualize infrastructure and application logs from a single environment.
+
+The platform provides a foundation for **security monitoring, troubleshooting, and operational visibility** through centralized log analysis.
