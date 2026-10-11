@@ -35,14 +35,21 @@ resource "azurerm_network_security_group" "elk_nsg" {
   }
 }
 resource "azurerm_network_security_rule" "allow_ssh" {
-  name                        = "Allow-SSH"
-  priority                    = 100
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "22"
-  source_address_prefix       = "*"
+  name                   = "Allow-SSH"
+  priority               = 100
+  direction              = "Inbound"
+  access                 = "Allow"
+  protocol               = "Tcp"
+  source_port_range      = "*"
+  destination_port_range = "22"
+
+  source_address_prefixes = [
+    "141.164.180.50/32",
+    "51.36.175.113/32",
+    "188.49.161.13/32",
+    "5.163.18.105/32"
+  ]
+
   destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.elk_rg.name
   network_security_group_name = azurerm_network_security_group.elk_nsg.name
