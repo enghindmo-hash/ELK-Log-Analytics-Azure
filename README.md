@@ -394,10 +394,11 @@ Potential enhancements beyond the initial capstone include automated log retenti
 ## Team
 
 **SentinelFour** — SDA Cloud Computing Bootcamp Capstone Project.
-Bdour Alsubaie
-Maram Alotaibi
-Hend Alzara
-Hadeel Aldhafeeri
+
+- [Bdour Alsubaie](https://github.com/Bdouralsubaie)
+- Maram Alotaibi
+- Hend Alzara
+- Hadeel Aldhafeeri
 
 ---
 
